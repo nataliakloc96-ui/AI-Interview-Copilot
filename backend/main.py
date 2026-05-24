@@ -12,11 +12,22 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-QUESTIONS = [
-    "Explain REST API design principles.",
-    "What is database indexing?",
-    "Explain async programming in Python."
-]
+QUESTIONS = {
+    "junior": [
+        "Explain REST API design principles.",
+        "What is database indexing?"
+    ],
+    "mid": [
+        "Explain async programming in Python.",
+        "How does connection pooling work?"
+    ],
+    "senior": [
+        "How would you design scalable microservices?",
+        "Explain eventual consistency."
+    ]
+}
+
+current_level = "junior"
 
 history = []
 
@@ -35,9 +46,11 @@ def home():
 @app.get("/question")
 def get_question():
 
-    current = len(history) % len(QUESTIONS)
+    questions = QUESTIONS[current_level]
+
+    current = len(history) % len(questions)
     return {
-        "question": QUESTIONS[current]
+        "question": questions[current]
     }
 
 
@@ -81,4 +94,17 @@ def score(data: Answer):
 @app.get("/history")
 def get_history():
     return history
+
+@app.get("/level/{level}")
+def set_level(level: str):
+
+    global current_level
+
+    current_level = level
+
+    history.clear()
+
+    return {
+        "level": current_level
+    }
 

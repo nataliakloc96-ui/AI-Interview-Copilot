@@ -8,6 +8,16 @@
 
 <h1>AI Interview Copilot</h1>
 
+<select id="level">
+    <option value="junior">Junior</option>
+    <option value="mid">Mid</option>
+    <option value="senior">Senior</option>
+</select>
+
+<button onclick="setLevel()">
+Set Level
+</button>
+
 <button onclick="getQuestion()">
 Start Interview
 </button>
@@ -169,6 +179,23 @@ async function loadHistory(){
     });
 }
 
+async function setLevel(){
+
+    const level =
+        document
+        .getElementById("level")
+        .value;
+
+    await fetch(
+        `${API}/level/${level}`
+    );
+
+    alert(
+        `Level set to ${level}`
+    );
+
+    getQuestion();
+}
 </script>
 
 </body>
