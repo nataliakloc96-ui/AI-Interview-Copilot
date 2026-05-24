@@ -33,7 +33,10 @@ def home():
 
 @app.get("/question")
 def get_question():
-    return {"question": QUESTIONS[0]}
+
+    current = len(history) % len(QUESTIONS)
+    return {"question": QUESTIONS[current]}
+
 
 @app.post("/score")
 def score(data: Answer):
