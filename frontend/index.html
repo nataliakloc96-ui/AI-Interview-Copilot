@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>AI Interview Copilot</title>
+</head>
+<body>
+
+<h1>AI Interview Copilot</h1>
+
+<button onclick="getQuestion()">
+Start Interview
+</button>
+
+<div id="question"></div>
+
+<script>
+
+const API =
+"https://ai-interview-copilot-qe47.onrender.com";
+
+async function getQuestion(){
+
+    const res =
+    await fetch(`${API}/question`);
+
+    const data =
+    await res.json();
+
+    document
+    .getElementById("question")
+    .innerHTML =
+    `<h2>${data.question}</h2>`;
+}
+
+</script>
+
+</body>
+</html>
