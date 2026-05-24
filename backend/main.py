@@ -51,16 +51,16 @@ def score(data: Answer):
         "api", "html", "stateless", "resource", "await", "async", "index", "database"
     ]
 
-    score = 0
+    points = 0
 
     for k in keywords:
         if k in answer:
-            score += 25
+            points += 25
     
-    if score >= 75:
+    if points >= 75:
         feedback.append("Strong technical understanding")
 
-    elif score >= 50:
+    elif points >= 50:
         feedback.append("Good answer, but lacks depth")
 
     else:
@@ -69,11 +69,11 @@ def score(data: Answer):
     
     history.append({
         "answer": data.answer,
-        "score": score        
+        "score": points        
     })
     
     return {
-        "score": score,
+        "score": points,
         "feedback": feedback
     }
 
