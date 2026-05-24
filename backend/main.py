@@ -17,6 +17,8 @@ QUESTIONS = [
     "Explain async programming in Python."
 ]
 
+history = []
+
 class Answer(BaseModel):
     answer: str
 
@@ -42,7 +44,7 @@ def score(data: Answer):
     feedback = []
 
     keywords = [
-        "api", "html", "stateless", "resource"
+        "api", "html", "stateless", "resource", "await", "async", "index", "database"
     ]
 
     for k in keywords:
@@ -62,3 +64,8 @@ def score(data: Answer):
         "score": score,
         "feedback": feedback
     }
+
+@app.get("/history")
+def get_history():
+    return history
+
