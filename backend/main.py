@@ -7,8 +7,9 @@ app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
+    allow_credentials=True,
     allow_methods=["*"],
-    allow_headers=["*"]
+    allow_headers=["*"],
 )
 
 QUESTIONS = [
@@ -55,16 +56,16 @@ def score(data: Answer):
 
     for k in keywords:
         if k in answer:
-            points += 25
+            points += 15
     
     if points >= 75:
-        feedback.append("Strong technical understanding")
+        feedback = "Strong technical understanding"
 
     elif points >= 50:
-        feedback.append("Good answer, but lacks depth")
+        feedback = "Good answer, but lacks depth"
 
     else:
-        feedback.append("Needs improvement")
+        feedback = "Needs improvement"
 
     
     history.append({
