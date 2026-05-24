@@ -35,7 +35,9 @@ def home():
 def get_question():
 
     current = len(history) % len(QUESTIONS)
-    return {"question": QUESTIONS[current]}
+    return {
+        "question": QUESTIONS[current]
+    }
 
 
 @app.post("/score")
@@ -43,12 +45,13 @@ def score(data: Answer):
 
     answer = data.answer.lower()
 
-    score = 0
-    feedback = []
+    
 
     keywords = [
         "api", "html", "stateless", "resource", "await", "async", "index", "database"
     ]
+
+    score = 0
 
     for k in keywords:
         if k in answer:
@@ -62,6 +65,12 @@ def score(data: Answer):
 
     else:
         feedback.append("Needs improvement")
+
+    
+    history.append({
+        "answer": data.answer,
+        "score": score        
+    })
     
     return {
         "score": score,
