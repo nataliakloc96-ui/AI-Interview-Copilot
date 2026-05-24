@@ -2,6 +2,7 @@
 <html>
 <head>
 <title>AI Interview Copilot</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
@@ -39,14 +40,13 @@ Submit Answer
 Load History
 </button>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 <script>
-
-let historyChart = null;
 
 const API =
 "https://ai-interview-copilot-b4fa.onrender.com";
+
+let historyChart = null;
+
 
 async function getQuestion(){
 
@@ -56,7 +56,9 @@ async function getQuestion(){
     const data =
     await res.json();
 
-    question.innerHTML =
+    document
+        .getElementById("question")
+        .innerHTML =
         `<h2>${data.question}</h2>`;
 }
 
@@ -86,23 +88,22 @@ async function submitAnswer(){
     const data =
         await res.json();
 
-    result.innerHTML = `
-        <h2>
-        Score: ${data.score}%
-        </h2>
+    document
+        .getElementById("result")
+        .innerHTML = `
+        <h2>Score:
+        ${data.score}%</h2>
 
-        <p>
-        ${data.feedback}
-        </p>
+        <p>${data.feedback}</p>
     `;
 
     document
         .getElementById("answer")
         .value = "";
 
-    // automatycznie pobierz kolejne pytanie
     getQuestion();
 }
+
 
 async function loadHistory(){
 
@@ -112,14 +113,18 @@ async function loadHistory(){
     const data =
     await res.json();
 
-    dashboard.innerHTML = "";
+    document
+        .getElementById("dashboard")
+        .innerHTML = "";
 
     const labels = [];
     const scores = [];
 
     data.forEach((h,i)=>{
 
-        dashboard.innerHTML += `
+        document
+            .getElementById("dashboard")
+            .innerHTML += `
             <div>
                 Attempt ${i+1}
                 — Score:
@@ -137,29 +142,33 @@ async function loadHistory(){
     });
 
     const ctx =
-    document
-    .getElementById("chart")
-    .getContext("2d");
+        document
+        .getElementById("chart")
+        .getContext("2d");
 
-if(historyChart){
-    historyChart.destroy();
+    if(historyChart){
+        historyChart.destroy();
+    }
+
+    historyChart =
+    new Chart(ctx,{
+        type:"line",
+
+        data:{
+            labels,
+            datasets:[{
+                label:
+                "Interview Score",
+                data:scores
+            }]
+        },
+
+        options:{
+            responsive:true
+        }
+    });
 }
 
-historyChart = new Chart(ctx,{
-    type:"line",
-
-    data:{
-        labels,
-        datasets:[{
-            label:"Interview Score",
-            data:scores
-        }]
-    },
-
-    options:{
-        responsive:true
-    }
-});
 </script>
 
 </body>
