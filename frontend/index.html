@@ -43,6 +43,8 @@ Load History
 
 <script>
 
+let historyChart = null;
+
 const API =
 "https://ai-interview-copilot-b4fa.onrender.com";
 
@@ -135,22 +137,29 @@ async function loadHistory(){
     });
 
     const ctx =
-        document
-        .getElementById("chart")
-        .getContext("2d");
+    document
+    .getElementById("chart")
+    .getContext("2d");
 
-    new Chart(ctx,{
-        type:"line",
-
-        data:{
-            labels,
-            datasets:[{
-                label:"Interview Score",
-                data:scores
-            }]
-        }
-    });
+if(historyChart){
+    historyChart.destroy();
 }
+
+historyChart = new Chart(ctx,{
+    type:"line",
+
+    data:{
+        labels,
+        datasets:[{
+            label:"Interview Score",
+            data:scores
+        }]
+    },
+
+    options:{
+        responsive:true
+    }
+});
 </script>
 
 </body>
