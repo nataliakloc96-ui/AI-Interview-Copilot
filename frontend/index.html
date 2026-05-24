@@ -13,10 +13,27 @@ Start Interview
 
 <div id="question"></div>
 
+<br>
+
+<textarea
+id="answer"
+rows="8"
+cols="80"
+placeholder="Type your answer">
+</textarea>
+
+<br><br>
+
+<button onclick="submitAnswer()">
+Submit Answer
+</button>
+
+<div id="result"></div>
+
 <script>
 
 const API =
-"https://ai-interview-copilot-qe47.onrender.com";
+"https://YOUR_RENDER_URL.onrender.com";
 
 async function getQuestion(){
 
@@ -26,10 +43,44 @@ async function getQuestion(){
     const data =
     await res.json();
 
-    document
-    .getElementById("question")
-    .innerHTML =
-    `<h2>${data.question}</h2>`;
+    question.innerHTML =
+        `<h2>${data.question}</h2>`;
+}
+
+
+async function submitAnswer(){
+
+    const answer =
+        document
+        .getElementById("answer")
+        .value;
+
+    const res =
+    await fetch(`${API}/score`,{
+
+        method:"POST",
+
+        headers:{
+            "Content-Type":
+            "application/json"
+        },
+
+        body:JSON.stringify({
+            answer
+        })
+    });
+
+    const data =
+        await res.json();
+
+    result.innerHTML = `
+        <h2>Score:
+        ${data.score}%</h2>
+
+        <p>
+        ${data.feedback[0]}
+        </p>
+    `;
 }
 
 </script>
