@@ -9,7 +9,7 @@ def init_db():
         CREATE TABLE IF NOT EXISTS users(
                 id SERIAL PRIMARY KEY,
                 email TEXT UNIQUE,
-                password_has TEXT
+                password_hash TEXT
                 )
     """)
 
