@@ -4,6 +4,9 @@ from pydantic import BaseModel
 from fastapi.responses import FileResponse
 from reportlab.platypus import SimpleDocTemplate, Paragraph
 from reportlab.lib.styles import getSampleStyleSheet
+import bcrypt
+from db import get_conn
+import init_db
 
 app = FastAPI()
 
@@ -36,6 +39,10 @@ history = []
 
 class Answer(BaseModel):
     answer: str
+
+class User(BaseModel):
+    email: str
+    password: str
 
 
 @app.get("/")
@@ -93,6 +100,33 @@ def score(data: Answer):
         "score": points,
         "feedback": feedback
     }
+
+@app.post("/register")
+def register(user: User):
+
+    conn = get_conn()
+    cur = conn.cursor()
+
+    hashed = bcrypt.hashpw(
+        user.password[:72].encode(),
+        bcrypt.gensalt()
+    ).decode()
+
+    cur.execute("""
+        INSERT INTO users
+        (email, password_hash)
+        VALUES (%s, %s)
+    """, (
+        user.email,
+        hashed
+    ))
+
+    conn.commit()
+    cur.close()
+    conn.close()
+
+    return {"status": "registered"}
+
 
 @app.get("/history")
 def get_history():
