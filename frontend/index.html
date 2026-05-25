@@ -44,7 +44,12 @@ Submit Answer
 <h2>Progress Dashboard</h2>
 <div id="dashboard"></div>
 
+<button onclick="downloadReport()">
+Download PDF Report
+</button>
+
 <canvas id="chart"></canvas>
+
 
 <button onclick="loadHistory()">
 Load History
@@ -195,6 +200,14 @@ async function setLevel(){
     );
 
     getQuestion();
+}
+
+function downloadReport(){
+
+    window.open(
+        `${API}/report`,
+        "_blank"
+    );
 }
 </script>
 

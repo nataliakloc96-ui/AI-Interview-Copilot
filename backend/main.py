@@ -1,6 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from fastapi.responses import FileResponse
+from reportlab.platypus import SimpleDocTemplate, Paragraph
+from reportlab.lib.styles import getSampleStyleSheet
 
 app = FastAPI()
 
@@ -108,3 +111,52 @@ def set_level(level: str):
         "level": current_level
     }
 
+@app.get("/report")
+def generate_report():
+
+    pdf = "report.pdf"
+
+    doc = SimpleDocTemplate(pdf)
+
+    styles = getSampleStyleSheet()
+
+    story = []
+
+    story.append(
+        Paragraph(
+            f"Interview Level: {current_level}",
+            styles["Title"]
+        )
+    )
+
+    total = 0
+
+    fot i,h in enumerate(history):
+
+    total += h["score"]
+
+    story.append(
+        Paragraph(
+            f"Attempt {i+1}: {h['score']}%",
+            styles["Normal"]
+        )
+    )
+
+    avg = 0 
+
+    if history:
+        avg = total / len(history)
+    
+    story.append(
+        Paragraph(
+            f"Average Score: {avg:.2f}%",
+            styles["Heading2"]
+        )
+    )
+
+    doc.build(story)
+
+    return FileResponse(
+        pdf,
+        filename="interview_report.pdf"
+    )
