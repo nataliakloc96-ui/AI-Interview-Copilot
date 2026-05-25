@@ -7,6 +7,8 @@ from reportlab.lib.styles import getSampleStyleSheet
 import bcrypt
 from db import get_conn
 import init_db
+from jose import jwt
+from datetime import datetime, timedelta
 
 app = FastAPI()
 
@@ -44,6 +46,23 @@ class User(BaseModel):
     email: str
     password: str
 
+class Login(BaseModel):
+    email: str
+    password: str
+
+
+SECRET_KEY = "super-secret-key-change-me"
+ALGORITHM = "HS256"
+
+def create_token(email: str):
+
+    payload = {
+        "sub": email,
+        "exp": datetime.utcnow() + timedelta(hours=2)
+    }
+
+    return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
+
 
 @app.get("/")
 def home():
@@ -67,7 +86,17 @@ def get_question():
 @app.post("/score")
 def score(data: Answer):
 
+    cur = conn.cursor()
+
+    cur.execute("""
+        INSERT INTO interview_history (email, score)
+        VALUES (%s, %s)
+    """, ("test@test.com", points))
+    conn.commit()
+
+
     answer = data.answer.lower()
+
 
     
 
@@ -129,7 +158,36 @@ def register(user: User):
 
 
 @app.get("/history")
-def get_history():
+def get_history(token: str):
+
+    try:
+        payload = jwt.decode(
+            token,
+            SECRET_KEY,
+            algorithms=[ALGORITHM]
+        )
+
+        email = payload["sub"]
+    
+    except:
+        return {"error": "Invalid token"}
+    
+    conn = get_conn()
+    cur = conn.cursor()
+
+    cur.execute("""
+        SELECT score FROM interview_history
+        WHERE email = %s
+    """, (email,))
+
+    rows = cur.fetchall()
+
+    return {
+        "email": email,
+        "history": rows
+    }
+
+    
     return history
 
 @app.get("/level/{level}")
@@ -193,3 +251,31 @@ def generate_report():
         pdf,
         filename="interview_report.pdf"
     )
+
+@app.post("/login")
+def login(data: Login):
+
+    conn = get_conn()
+    cur = conn.cursor()
+
+    cur.execute(
+        "SELECT password_hash FROM users WHERE email = %s",
+        (data.email,)
+    )
+
+    user = cur.fetchone()
+
+    if not user:
+        return {"error": "invalid credentials"}
+    
+    stored_hash = user[0]
+
+    if not bcrypt.checkpw(
+        data.password.encode(),
+        stored_hash.encode()
+    ):
+        return {"error": "invalid credentials"}
+    
+    token = create_token(data.email)
+
+    return {"token": token}

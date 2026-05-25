@@ -3,3 +3,4 @@ uvicorn
 reportlab
 psycopg2-binary
 bcrypt
+python-jose[cryptography]
