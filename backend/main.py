@@ -131,7 +131,7 @@ def generate_report():
 
     total = 0
 
-    fot i,h in enumerate(history):
+    for i,h in enumerate(history):
 
     total += h["score"]
 
