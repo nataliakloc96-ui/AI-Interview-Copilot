@@ -1,20 +1,19 @@
 from db import get_conn
 
-def init_db():
 
+def init_db():
     conn = get_conn()
     cur = conn.cursor()
 
     cur.execute("""
-        CREATE TABLE IF NOT EXISTS users(
-                id SERIAL PRIMARY KEY,
-                email TEXT UNIQUE,
-                password_hash TEXT
-                )
+        ALTER TABLE users
+        RENAME COLUMN password TO password_hash
     """)
 
     conn.commit()
+
     cur.close()
     conn.close()
+
 
 init_db()
