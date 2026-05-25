@@ -132,15 +132,14 @@ def generate_report():
     total = 0
 
     for i,h in enumerate(history):
+        total += h["score"]
 
-    total += h["score"]
-
-    story.append(
-        Paragraph(
-            f"Attempt {i+1}: {h['score']}%",
-            styles["Normal"]
+        story.append(
+            Paragraph(
+                f"Attempt {i+1}: {h['score']}%",
+                styles["Normal"]
+            )
         )
-    )
 
     avg = 0 
 
