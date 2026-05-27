@@ -97,19 +97,7 @@ def score(data: Answer, authorization: str = Header(None)):
 
     email = decode_token(authorization)
 
-    cur = conn.cursor()
-
-    cur.execute("""
-        INSERT INTO interview_history (email, score)
-        VALUES (%s, %s)
-    """, (email, points))
-    conn.commit()
-
-
     answer = data.answer.lower()
-
-
-    
 
     keywords = [
         "api", "html", "stateless", "resource", "await", "async", "index", "database"
@@ -136,10 +124,25 @@ def score(data: Answer, authorization: str = Header(None)):
         "score": points        
     })
     
+
+    conn = get_conn()
+
+    cur = conn.cursor()
+
+    cur.execute("""
+        INSERT INTO interview_history (email, score)
+        VALUES (%s, %s)
+    """, (email, points))
+    conn.commit()
+    cur.close()
+    conn.close()
+
+   
     return {
         "score": points,
         "feedback": feedback
     }
+
 
 @app.post("/register")
 def register(user: User):
