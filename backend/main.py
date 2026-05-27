@@ -102,7 +102,7 @@ def score(data: Answer, authorization: str = Header(None)):
 
         answer = data.answer.lower()
 
-        ai = generate_feedback(points)
+        
 
         keywords = [
             "api", "html", "stateless", "resource", "await", "async", "index", "database"
@@ -115,16 +115,13 @@ def score(data: Answer, authorization: str = Header(None)):
         for k in keywords:
             if k in answer:
                 points += 15
+        
+        if points > 100:
+            points = 100
+        
+        ai = generate_feedback(points)
     
-        if points >= 75:
-            ai = "Strong technical understanding"
-
-        elif points >= 50:
-            ai = "Good answer, but lacks depth"
-
-        else:
-            ai = "Needs improvement"
-
+        
     
         history.append({
             "answer": data.answer,
