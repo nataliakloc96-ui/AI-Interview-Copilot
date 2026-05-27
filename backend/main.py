@@ -96,56 +96,63 @@ def get_question():
 @app.post("/score")
 def score(data: Answer, authorization: str = Header(None)):
 
-    email = decode_token(authorization)
+    try:
 
-    answer = data.answer.lower()
+        email = decode_token(authorization)
 
-    keywords = [
-        "api", "html", "stateless", "resource", "await", "async", "index", "database"
-    ]
+        answer = data.answer.lower()
 
-    ai = generate_feedback(points)
+        ai = generate_feedback(points)
 
-    points = 0
+        keywords = [
+            "api", "html", "stateless", "resource", "await", "async", "index", "database"
+     ]
 
-    for k in keywords:
-        if k in answer:
-            points += 15
+        
+
+        points = 0
+
+        for k in keywords:
+            if k in answer:
+                points += 15
     
-    if points >= 75:
-        ai = "Strong technical understanding"
+        if points >= 75:
+            ai = "Strong technical understanding"
 
-    elif points >= 50:
-        ai = "Good answer, but lacks depth"
+        elif points >= 50:
+            ai = "Good answer, but lacks depth"
 
-    else:
-        ai = "Needs improvement"
+        else:
+            ai = "Needs improvement"
 
     
-    history.append({
-        "answer": data.answer,
-        "score": points        
-    })
+        history.append({
+            "answer": data.answer,
+            "score": points        
+        })
     
 
-    conn = get_conn()
+        conn = get_conn()
 
-    cur = conn.cursor()
+        cur = conn.cursor()
 
-    cur.execute("""
-        INSERT INTO interview_history (email, score)
-        VALUES (%s, %s)
-    """, (email, points))
-    conn.commit()
-    cur.close()
-    conn.close()
+        cur.execute("""
+            INSERT INTO interview_history (email, score)
+            VALUES (%s, %s)
+        """, (email, points))
+        conn.commit()
+        cur.close()
+        conn.close()
 
    
-    return {
-        "score": points,
-        "ai_level": ai["level"],
-        "feedback": ai["feedback"]
-    }
+        return {
+            "score": points,
+            "ai_level": ai["level"],
+            "feedback": ai["feedback"]
+        }
+    
+    except Exception as e:
+        return {"error": str(e)}
 
 
 @app.post("/register")
