@@ -303,7 +303,7 @@ def leaderboard():
     cur.execute("""
         SELECT
             email,
-            ROUND(AVG(score),2) as avg_score
+            ROUND(AVG(score),2) as avg_score,
             COUNT(*) as interviews
             FROM interview_history
             GROUP BY email
@@ -319,9 +319,15 @@ def leaderboard():
     result = []
 
     for r in rows:
+
+        avg_score = 0
+
+        if r[1] is not None:
+            avg_score = round(float(r[1]), 2)
+            
         result.append({
             "email": r[0],
-            "avg_score": float(r[1]),
+            "avg_score": avg_score,
             "interviews": r[2]
         })
 
