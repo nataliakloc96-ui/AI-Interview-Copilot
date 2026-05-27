@@ -52,7 +52,7 @@ class Login(BaseModel):
     password: str
 
 
-SECRET_KEY = "super-secret-key-change-me"
+SECRET_KEY = "1a7db463de8bd187db6219850302d079"
 ALGORITHM = "HS256"
 
 def create_token(email: str):
