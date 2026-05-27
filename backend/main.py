@@ -9,6 +9,7 @@ from db import get_conn
 import init_db
 from jose import jwt
 from datetime import datetime, timedelta
+from ai_feedback import generate_feedback
 
 app = FastAPI()
 
@@ -103,6 +104,8 @@ def score(data: Answer, authorization: str = Header(None)):
         "api", "html", "stateless", "resource", "await", "async", "index", "database"
     ]
 
+    ai = generate_feedback(points)
+
     points = 0
 
     for k in keywords:
@@ -110,13 +113,13 @@ def score(data: Answer, authorization: str = Header(None)):
             points += 15
     
     if points >= 75:
-        feedback = "Strong technical understanding"
+        ai = "Strong technical understanding"
 
     elif points >= 50:
-        feedback = "Good answer, but lacks depth"
+        ai = "Good answer, but lacks depth"
 
     else:
-        feedback = "Needs improvement"
+        ai = "Needs improvement"
 
     
     history.append({
@@ -140,7 +143,8 @@ def score(data: Answer, authorization: str = Header(None)):
    
     return {
         "score": points,
-        "feedback": feedback
+        "ai_level": ai["level"],
+        "feedback": ai["feedback"]
     }
 
 

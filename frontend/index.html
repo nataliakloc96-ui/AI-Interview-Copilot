@@ -278,18 +278,23 @@ async function submitAnswer(){
     }
 
     document
-        .getElementById("result")
-        .innerHTML = `
+    .getElementById("result")
+    .innerHTML = `
 
-        <h2>
-            Score:
-            ${data.score}%
-        </h2>
+    <h2>
+        Score:
+        ${data.score}%
+    </h2>
 
-        <p>
-            ${data.feedback}
-        </p>
-    `;
+    <h3>
+        AI Rating:
+        ${data.ai_level}
+    </h3>
+
+    <p>
+        ${data.feedback}
+    </p>
+`;
 
     document
         .getElementById("answer")
