@@ -294,3 +294,38 @@ def login(data: Login):
 
     return {"token": token}
 
+@app.get("/leaderboard")
+def leaderboard():
+
+    conn = get_conn()
+    cur = conn.cursor()
+
+    cur.execute("""
+        SELECT
+            email,
+            ROUND(AVG(score),2) as avg_score
+            COUNT(*) as interviews
+            FROM interview_history
+            GROUP BY email
+            ORDER BY avg_score DESC
+            LIMIT 10
+    """)
+
+    rows = cur.fetchall()
+
+    cur.close()
+    conn.close()
+
+    result = []
+
+    for r in rows:
+        result.append({
+            "email": r[0],
+            "avg_score": float(r[1]),
+            "interviews": r[2]
+        })
+
+    return {
+        "leaderboard": result
+    }
+
