@@ -174,7 +174,14 @@ def register(user: User):
 @app.get("/history")
 def get_history(authorization: str = Header(None)):
 
-    email = decode_token(authorization)
+    try:
+        if not authorization:
+            return {"error": "missing token"}
+
+        email = decode_token(authorization)
+    
+    except Exception as e:
+        return {"error": str(e)}
 
     conn = get_conn()
     cur = conn.cursor()
@@ -184,6 +191,11 @@ def get_history(authorization: str = Header(None)):
         FROM interview_history
         WHERE email = %s
     """, (email,))
+
+    rows = cur.fetchall()
+
+    cur.close()
+    conn.close()
 
     return {
         "email": email,
