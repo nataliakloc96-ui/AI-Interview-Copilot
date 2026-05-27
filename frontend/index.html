@@ -1,22 +1,59 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>AI Interview Copilot</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>AI Interview Copilot</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+
 <body>
 
 <h1>AI Interview Copilot</h1>
 
+<hr>
+
+<h2>Authentication</h2>
+
+<input
+    id="email"
+    placeholder="Email">
+
+<input
+    id="password"
+    type="password"
+    placeholder="Password">
+
+<button onclick="register()">
+Register
+</button>
+
+<button onclick="login()">
+Login
+</button>
+
+<hr>
+
+<h2>Interview Level</h2>
+
 <select id="level">
-    <option value="junior">Junior</option>
-    <option value="mid">Mid</option>
-    <option value="senior">Senior</option>
+    <option value="junior">
+        Junior
+    </option>
+
+    <option value="mid">
+        Mid
+    </option>
+
+    <option value="senior">
+        Senior
+    </option>
 </select>
 
 <button onclick="setLevel()">
 Set Level
 </button>
+
+<hr>
 
 <button onclick="getQuestion()">
 Start Interview
@@ -27,10 +64,10 @@ Start Interview
 <br>
 
 <textarea
-id="answer"
-rows="8"
-cols="80"
-placeholder="Type your answer">
+    id="answer"
+    rows="8"
+    cols="80"
+    placeholder="Type your answer here">
 </textarea>
 
 <br><br>
@@ -39,20 +76,26 @@ placeholder="Type your answer">
 Submit Answer
 </button>
 
+<hr>
+
 <div id="result"></div>
 
-<h2>Progress Dashboard</h2>
-<div id="dashboard"></div>
+<hr>
 
-<button onclick="downloadReport()">
-Download PDF Report
-</button>
+<h2>Dashboard</h2>
+
+<div id="dashboard"></div>
 
 <canvas id="chart"></canvas>
 
+<br>
 
 <button onclick="loadHistory()">
 Load History
+</button>
+
+<button onclick="downloadReport()">
+Download PDF Report
 </button>
 
 <script>
@@ -63,126 +106,87 @@ const API =
 let historyChart = null;
 
 
-async function getQuestion(){
+async function register(){
 
     const res =
-    await fetch(`${API}/question`);
-
-    const data =
-    await res.json();
-
-    document
-        .getElementById("question")
-        .innerHTML =
-        `<h2>${data.question}</h2>`;
-}
-
-
-async function submitAnswer(){
-
-    const answer =
-        document
-        .getElementById("answer")
-        .value;
-
-    const res =
-    await fetch(`${API}/score`,{
+    await fetch(`${API}/register`,{
 
         method:"POST",
 
         headers:{
-            "Content-Type":
-            "application/json"
+            "Content-Type":"application/json"
         },
 
         body:JSON.stringify({
-            answer
+            email:
+                document
+                .getElementById("email")
+                .value,
+
+            password:
+                document
+                .getElementById("password")
+                .value
         })
     });
 
     const data =
         await res.json();
 
-    document
-        .getElementById("result")
-        .innerHTML = `
-        <h2>Score:
-        ${data.score}%</h2>
+    console.log(data);
 
-        <p>${data.feedback}</p>
-    `;
-
-    document
-        .getElementById("answer")
-        .value = "";
-
-    getQuestion();
-}
-
-
-async function loadHistory(){
-
-    const res =
-    await fetch(`${API}/history`);
-
-    const data =
-    await res.json();
-
-    document
-        .getElementById("dashboard")
-        .innerHTML = "";
-
-    const labels = [];
-    const scores = [];
-
-    data.forEach((h,i)=>{
-
-        document
-            .getElementById("dashboard")
-            .innerHTML += `
-            <div>
-                Attempt ${i+1}
-                — Score:
-                ${h.score}%
-            </div>
-        `;
-
-        labels.push(
-            `Attempt ${i+1}`
-        );
-
-        scores.push(
-            h.score
-        );
-    });
-
-    const ctx =
-        document
-        .getElementById("chart")
-        .getContext("2d");
-
-    if(historyChart){
-        historyChart.destroy();
+    if(data.error){
+        alert(data.error);
+        return;
     }
 
-    historyChart =
-    new Chart(ctx,{
-        type:"line",
+    alert("Registered");
+}
 
-        data:{
-            labels,
-            datasets:[{
-                label:
-                "Interview Score",
-                data:scores
-            }]
+
+async function login(){
+
+    const res =
+    await fetch(`${API}/login`,{
+
+        method:"POST",
+
+        headers:{
+            "Content-Type":"application/json"
         },
 
-        options:{
-            responsive:true
-        }
+        body:JSON.stringify({
+
+            email:
+                document
+                .getElementById("email")
+                .value,
+
+            password:
+                document
+                .getElementById("password")
+                .value
+        })
     });
+
+    const data =
+        await res.json();
+
+    console.log(data);
+
+    if(data.error){
+        alert(data.error);
+        return;
+    }
+
+    localStorage.setItem(
+        "token",
+        data.token
+    );
+
+    alert("Logged in");
 }
+
 
 async function setLevel(){
 
@@ -202,6 +206,188 @@ async function setLevel(){
     getQuestion();
 }
 
+
+async function getQuestion(){
+
+    const res =
+    await fetch(
+        `${API}/question`
+    );
+
+    const data =
+        await res.json();
+
+    document
+        .getElementById("question")
+        .innerHTML = `
+            <h2>
+                ${data.question}
+            </h2>
+        `;
+}
+
+
+async function submitAnswer(){
+
+    const token =
+        localStorage.getItem(
+            "token"
+        );
+
+    const answer =
+        document
+        .getElementById("answer")
+        .value;
+
+    const res =
+    await fetch(`${API}/score`,{
+
+        method:"POST",
+
+        headers:{
+            "Content-Type":
+                "application/json",
+
+            "Authorization":
+                `Bearer ${token}`
+        },
+
+        body:JSON.stringify({
+            answer
+        })
+    });
+
+    const data =
+        await res.json();
+
+    console.log(data);
+
+    if(data.error){
+        alert(data.error);
+        return;
+    }
+
+    document
+        .getElementById("result")
+        .innerHTML = `
+
+        <h2>
+            Score:
+            ${data.score}%
+        </h2>
+
+        <p>
+            ${data.feedback}
+        </p>
+    `;
+
+    document
+        .getElementById("answer")
+        .value = "";
+
+    getQuestion();
+}
+
+
+async function loadHistory(){
+
+    const token =
+        localStorage.getItem(
+            "token"
+        );
+
+    const res =
+    await fetch(`${API}/history`,{
+
+        headers:{
+            "Authorization":
+                `Bearer ${token}`
+        }
+    });
+
+    const data =
+        await res.json();
+
+    console.log(data);
+
+    if(data.error){
+
+        dashboard.innerHTML =
+            `<h3>
+                ${data.error}
+            </h3>`;
+
+        return;
+    }
+
+    dashboard.innerHTML =
+        `<h3>${data.email}</h3>`;
+
+    const labels = [];
+    const scores = [];
+
+    data.history.forEach((h,i)=>{
+
+        dashboard.innerHTML += `
+
+            <div style="
+                border:1px solid #ccc;
+                margin:10px;
+                padding:15px;
+            ">
+
+                Attempt ${i+1}
+
+                <br>
+
+                Score:
+                ${h[0]}%
+
+            </div>
+        `;
+
+        labels.push(
+            `Attempt ${i+1}`
+        );
+
+        scores.push(
+            h[0]
+        );
+    });
+
+    const ctx =
+        document
+        .getElementById("chart")
+        .getContext("2d");
+
+    if(historyChart){
+        historyChart.destroy();
+    }
+
+    historyChart =
+    new Chart(ctx,{
+
+        type:"line",
+
+        data:{
+
+            labels,
+
+            datasets:[{
+                label:
+                    "Interview Scores",
+
+                data:scores
+            }]
+        },
+
+        options:{
+            responsive:true
+        }
+    });
+}
+
+
 function downloadReport(){
 
     window.open(
@@ -209,6 +395,7 @@ function downloadReport(){
         "_blank"
     );
 }
+
 </script>
 
 </body>

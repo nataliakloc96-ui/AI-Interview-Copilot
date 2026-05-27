@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Header
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from fastapi.responses import FileResponse
@@ -64,6 +64,15 @@ def create_token(email: str):
     return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
 
 
+def decode_token(auth_header):
+
+    token = auth_header.replace("Bearer ", "")
+
+    payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+
+    return payload["sub"]
+
+
 @app.get("/")
 def home():
     return {
@@ -84,14 +93,16 @@ def get_question():
 
 
 @app.post("/score")
-def score(data: Answer):
+def score(data: Answer, authorization: str = Header(None)):
+
+    email = decode_token(authorization)
 
     cur = conn.cursor()
 
     cur.execute("""
         INSERT INTO interview_history (email, score)
         VALUES (%s, %s)
-    """, ("test@test.com", points))
+    """, (email, points))
     conn.commit()
 
 
@@ -158,37 +169,25 @@ def register(user: User):
 
 
 @app.get("/history")
-def get_history(token: str):
+def get_history(authorization: str = Header(None)):
 
-    try:
-        payload = jwt.decode(
-            token,
-            SECRET_KEY,
-            algorithms=[ALGORITHM]
-        )
+    email = decode_token(authorization)
 
-        email = payload["sub"]
-    
-    except:
-        return {"error": "Invalid token"}
-    
     conn = get_conn()
     cur = conn.cursor()
 
     cur.execute("""
-        SELECT score FROM interview_history
+        SELECT score
+        FROM interview_history
         WHERE email = %s
     """, (email,))
-
-    rows = cur.fetchall()
 
     return {
         "email": email,
         "history": rows
     }
-
     
-    return history
+
 
 @app.get("/level/{level}")
 def set_level(level: str):
@@ -279,3 +278,4 @@ def login(data: Login):
     token = create_token(data.email)
 
     return {"token": token}
+
