@@ -1,133 +1,100 @@
-# AI Interview Copilot
+# 🎤 AI Interview Copilot
 
-AI Interview Copilot is a fullstack interview practice platform built with FastAPI, PostgreSQL, JavaScript and JWT authentication.
+An interview preparation platform that simulates technical interview questions, evaluates answers, and tracks user performance.
 
-The application simulates technical interview sessions, scores answers, generates AI-style feedback, tracks user performance history and displays analytics dashboards with charts and leaderboards.
+## 🚀 Overview
 
----
-
-# Features
-
-- User registration & login
-- JWT authentication
-- Technical interview simulation
-- Dynamic interview questions
-- AI-style feedback generation
-- Interview scoring system
-- User-specific interview history
-- Leaderboard & ranking system
-- PDF interview reports
-- Analytics dashboard
-- Chart.js visualizations
-- PostgreSQL database
-- Fullstack deployment
+AI Interview Copilot helps users prepare for technical interviews through interactive questions, answer scoring, progress tracking, and analytics dashboards.
 
 ---
 
-# Tech Stack
+## ✨ Features
 
-## Backend
-- Python
-- FastAPI
-- PostgreSQL
-- psycopg2
-- JWT Authentication
-- bcrypt
-
-## Frontend
-- HTML
-- CSS
-- JavaScript
-- Chart.js
-
-## Deployment
-- Render (backend)
-- Vercel (frontend)
+* Technical interview questions
+* Automated answer scoring
+* User registration and login
+* Interview history tracking
+* Leaderboard
+* Performance analytics dashboard
 
 ---
 
-# Architecture
+## 🛠 Tech Stack
 
-Frontend (Vercel)
-↓
-FastAPI Backend (Render)
-↓
-PostgreSQL Database
+### Backend
 
----
+* Python
+* FastAPI
+* PostgreSQL
 
-# Authentication
+### Frontend
 
-The application uses JWT-based authentication:
+* HTML
+* CSS
+* JavaScript
+* Chart.js
 
-- User registration
-- Secure password hashing with bcrypt
-- Login token generation
-- Protected API endpoints
-- User-specific dashboard data
+### Deployment
 
----
-
-# AI Feedback System
-
-The project includes a lightweight AI-style feedback engine that:
-
-- analyzes interview answers
-- scores technical responses
-- generates coaching feedback
-- simulates interviewer behavior
-
-This implementation does not require paid AI APIs.
+* Render
+* Vercel
 
 ---
 
-# Dashboard Features
+## 🌐 Live Demo
 
-Users can:
+Frontend:
+https://ai-interview-copilot-seven.vercel.app
 
-- track interview scores
-- visualize progress history
-- compare leaderboard rankings
-- download PDF reports
-
----
-
-# API Endpoints
-
-## Authentication
-
-### Register
-POST /register
-
-### Login
-POST /login
+Backend API:
+https://ai-interview-copilot-b4fa.onrender.com
 
 ---
 
-## Interview
+## 📡 API Endpoints
 
 ### Get Question
+
+```http
 GET /question
+```
 
-### Submit Answer
+### Score Answer
+
+```http
 POST /score
+```
 
----
+### Interview History
 
-## Analytics
-
-### User History
+```http
 GET /history
+```
 
 ### Leaderboard
+
+```http
 GET /leaderboard
+```
 
 ---
 
-# Local Installation
+## 🎯 Learning Objectives
 
-## Clone repository
+* FastAPI Development
+* PostgreSQL Integration
+* Authentication Systems
+* Analytics Dashboards
+* REST API Design
 
-```bash
-git clone https://github.com/nataliakloc96-ui/AI-Interview-Copilot.git
-cd AI-Interview-Copilot
+---
+
+## 👩‍💻 Author
+
+Natalia Kurek
+
+LinkedIn:
+[www.linkedin.com/in/natalia-kurek-b46660308](http://www.linkedin.com/in/natalia-kurek-b46660308)
+
+GitHub:
+https://github.com/nataliakloc96-ui
